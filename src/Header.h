@@ -5,6 +5,9 @@
 #include <fstream>
 #include <string>
 #include <cmath>
+#include <termios.h>
+#include <sys/ioctl.h>
+
 
 #define MemoryOverFlow 1
 #define FlagIncorrectCommand 2
@@ -12,6 +15,7 @@
 
 extern int Memory[100];
 extern int sc_FlagRegister;
+enum colors { Dark, Red, Green, Yellow, Blue, Black, Cyan, White, Standart };
 
 int sc_regInit(void);
 int sc_regSet(int sc_register, int value);
@@ -31,7 +35,15 @@ void Convert2to16(std::string Origin, std::string *Result);
 void Convert16to2(std::string Origin, std::string *Result);
 void Convert10to16(int Origin, std::string *Result);
 void Convert16to10(std::string Origin, int *Result);
-void PrintMem();
+void PrintInterface();
 bool CheckCommand(int value);
+void Input(std::string Input);
+void FillInputDatabase();
+
+int mt_clrscr(void);
+int mt_gotoXY(int X, int Y);
+int mt_getscreensize(int *rows, int *cols);
+int mt_setfgcolor(enum colors C);
+int mt_setbgcolor(enum colors C);
 
 #endif // !_MYCOMUTER_SIMPLE_H

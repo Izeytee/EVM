@@ -1,5 +1,19 @@
 #include "Header.h"
 
+struct ConverterStrForSwitch{ std::string Str; int index; };
+
+const int index = 2;
+
+ConverterStrForSwitch Database[index];
+
+void FillInputDatabase()
+{
+	for (int i = 0; i < index; i++)
+		Database[i].index = i;
+	Database[0].Str = "PrintInterface";
+	Database[1].Str = "GraphicsTest";
+}
+
 void Convert10to2(int Origin, std::string *Result)
 {
 	int Multiply = 16384;
@@ -283,11 +297,80 @@ void Convert16to10(std::string Origin, int *Result)
 	Convert2to10(Origin, Result);
 }
 
-void PrintMem()
+void PrintInterface(void)
 {
 	std::string res = "";
 	int k = 4;
-	for (int i = 0; i < 100; i++)
+	std::cout << "\u250C";
+	for (int i = 1; i < k * 4; i++)
+		std::cout << "\u2500";
+	std::cout << "Memory";
+	for (int i = 0; i < k * 4; i++)
+		std::cout << "\u2500";
+	std::cout << "\u2500\u2500\u2510";
+	std::cout << "\u250C\u2500\u2500\u2500 Accumulator\u2500\u2500\u2500\u2510";
+	std::cout << "\u250C InstructionCounter\u2510";
+	std::cout << std::endl << "\u2502";
+	for (int i = 0; i < 5; i++)
+	{
+		Convert10to16(Memory[i], &res);
+		std::cout << res << "\t";
+	}
+	std::cout << "\u2502\u2502                  \u2502\u2502                   \u2502" << std::endl << "\u2502";
+	for (int i = 5; i < 10; i++)
+	{
+		Convert10to16(Memory[i], &res);
+		std::cout << res << "\t";
+	}
+	std::cout << "\u2502\u2514";
+	for (int i = 0; i < 18; i++)
+		std::cout << "\u2500";
+	std::cout << "\u2518\u2514";
+	for (int i = 0; i < 19; i++)
+		std::cout << "\u2500";
+	std::cout << "\u2518" << std::endl << "\u2502";
+	for (int i = 10; i < 15; i++)
+	{
+		Convert10to16(Memory[i], &res);
+		std::cout << res << "\t";
+	}
+
+	std::cout << "\u2502";
+	std::cout << "\u250C\u2500\u2500\u2500 Operation\u2500\u2500\u2500\u2500\u2500\u2510";
+	std::cout << "\u250C\u2500\u2500\u2500\u2500\u2500\u2500 Flags\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510";
+	std::cout << std::endl << "\u2502";
+
+	for (int i = 15; i < 20; i++)
+	{
+		Convert10to16(Memory[i], &res);
+		std::cout << res << "\t";
+	}
+
+	std::cout << "\u2502\u2502                  \u2502\u2502                   \u2502" << std::endl << "\u2502";
+	for (int i = 20; i < 25; i++)
+	{
+		Convert10to16(Memory[i], &res);
+		std::cout << res << "\t";
+	}
+	std::cout << "\u2502\u2514";
+	for (int i = 0; i < 18; i++)
+		std::cout << "\u2500";
+	std::cout << "\u2518\u2514";
+	for (int i = 0; i < 19; i++)
+		std::cout << "\u2500";
+	std::cout << "\u2518" << std::endl << "\u2502";
+
+	for (int i = 25; i < 30; i++)
+	{
+		Convert10to16(Memory[i], &res);
+		std::cout << res << "\t";
+	}
+
+	std::cout << "\u2502\u250C Keys:\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500";
+	std::cout << "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510";
+	std::cout << std::endl << "\u2502";
+
+	for (int i = 30; i < 50; i++)
 	{
 		Convert10to16(Memory[i], &res);
 		std::cout << res << "\t";
@@ -295,8 +378,95 @@ void PrintMem()
 			k--;
 		else
 		{
-			std::cout << std::endl;
+			std::cout << "\u2502";
+			std::cout << "\u2502                                       \u2502 " << std::endl << "\u2502";
 			k = 4;
 		}
+	}
+
+	for (int i = 50; i < 55; i++)
+	{
+		Convert10to16(Memory[i], &res);
+		std::cout << res << "\t";
+	}
+	std::cout << "\u2502\u2514";
+
+	for (int i = 0; i < 39; i++)
+		std::cout << "\u2500";
+	std::cout << "\u2518" << std::endl << "\u2502";
+
+	for (int i = 55; i < 60; i++)
+	{
+		Convert10to16(Memory[i], &res);
+		std::cout << res << "\t";
+	}
+
+	std::cout << "\u2502\u250C";
+	for (int i = 0; i < 39; i++)
+		std::cout << "\u2500";
+	std::cout << "\u2510";
+	std::cout << std::endl << "\u2502";
+
+	for (int i = 60; i < 100; i++)
+	{
+		Convert10to16(Memory[i], &res);
+		std::cout << res << "\t";
+		if (k)
+			k--;
+		else
+		{
+			std::cout << "\u2502\u2502";
+			for (int j = 0; j < 39; j++)
+				std::cout << " ";
+			std::cout << "\u2502" << std::endl << "\u2502";
+			k = 4;
+		}
+	}
+	std::cout << "\b\u2514";
+	for (int i = 0; i < 39; i++)
+		std::cout << "\u2500";
+	std::cout << "\u2518\u2514";
+	for (int i = 0; i < 39; i++)
+		std::cout << "\u2500";
+	std::cout << "\u2518";
+}
+
+void GraphicsTest(void)
+{
+	int Lines, Columns;
+	mt_clrscr();
+	mt_gotoXY(5, 10);
+	mt_setfgcolor(Red);
+	mt_setbgcolor(Black);
+	std::cout << "Kirill";
+	mt_gotoXY(6, 8);
+	mt_setfgcolor(Green);
+	mt_setbgcolor(White);
+	std::cout << "IP-713";
+	mt_gotoXY(10, 1);
+	mt_setfgcolor(Standart);
+	mt_setbgcolor(Standart);
+	mt_getscreensize(&Lines, &Columns);
+	std::cout << Lines << std::endl << Columns << std::endl;
+}
+
+void Input(std::string Input)
+{
+	int Check;
+	bool l = false;
+	for (Check = 0; Check < index; Check++)
+		if (Input == Database[Check].Str)
+			break;
+	switch (Check)
+	{
+	case 0:
+		PrintInterface();
+		break;
+	case 1:
+		GraphicsTest();
+		break;
+	default:
+		std::cout << "Unknown command" << std::endl;
+		break;
 	}
 }
