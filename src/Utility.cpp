@@ -11,7 +11,6 @@ void FillInputDatabase()
 	for (int i = 0; i < index; i++)
 		Database[i].index = i;
 	Database[0].Str = "PrintInterface";
-	Database[1].Str = "GraphicsTest";
 }
 
 void Convert10to2(int Origin, std::string *Result)
@@ -431,25 +430,6 @@ void PrintInterface(void)
 	std::cout << "\u2518";
 }
 
-void GraphicsTest(void)
-{
-	int Lines, Columns;
-	mt_clrscr();
-	mt_gotoXY(5, 10);
-	mt_setfgcolor(Red);
-	mt_setbgcolor(Black);
-	std::cout << "Kirill";
-	mt_gotoXY(6, 8);
-	mt_setfgcolor(Green);
-	mt_setbgcolor(White);
-	std::cout << "IP-713";
-	mt_gotoXY(10, 1);
-	mt_setfgcolor(Standart);
-	mt_setbgcolor(Standart);
-	mt_getscreensize(&Lines, &Columns);
-	std::cout << Lines << std::endl << Columns << std::endl;
-}
-
 void Input(std::string Input)
 {
 	int Check;
@@ -461,9 +441,6 @@ void Input(std::string Input)
 	{
 	case 0:
 		PrintInterface();
-		break;
-	case 1:
-		GraphicsTest();
 		break;
 	default:
 		std::cout << "Unknown command" << std::endl;
