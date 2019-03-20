@@ -14,7 +14,15 @@ int mt_gotoXY(int X, int Y)
 
 int mt_getscreensize(int *rows, int *cols)
 {
-	return 0;
+	struct winsize ws;
+	if (!ioctl(1, TIOCGWINSZ, &ws))
+	{
+		(*rows) = ws.ws_row;
+		(*cols) = ws.ws_col; 
+		return 0;
+	}
+	else
+		return -1;
 }
 
 int mt_setfgcolor(enum colors Ñ)

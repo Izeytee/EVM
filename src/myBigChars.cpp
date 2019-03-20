@@ -85,5 +85,26 @@ int bc_getbigcharpos(int *big, int x, int y, int *value)
 
 int bc_bigcharwrite(int fd, int * big, int count)
 {
+	char *filename = "SavedFiles"; 
+	std::ofstream out(filename, std::ios::binary);
+	if (!out)
+	{
+		return -1;
+	}
+	out.write((char*)&big, sizeof(int) * 2 * int);
+	out.close;
+	return 0;
+}
 
+int bc_bigcharread(int fd, int * big, int need_count, int *count)
+{
+	char *filename = "SavedFiles"; 
+	std::ifstream in(filename, std::ios::binary);
+	if(!in)
+	{
+		return -1;
+	}
+	in.read((char*)big, sizeof(int) * 2 * count);
+	in.close;
+	return 0;
 }

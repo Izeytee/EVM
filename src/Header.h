@@ -5,6 +5,11 @@
 #include <fstream>
 #include <string>
 #include <cmath>
+#include <termios.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #define MemoryOverFlow 1
 #define FlagIncorrectCommand 2
