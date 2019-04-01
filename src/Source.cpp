@@ -105,7 +105,7 @@ int sc_memoryGet(int address, int *value)
 	}
 	else
 	{
-		std::cout << "Error. Memory over flow" << std::endl;
+		std::cout << "Error. Memory overflow" << std::endl;
 		return NULL;
 	}
 }

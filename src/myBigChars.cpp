@@ -7,23 +7,32 @@ int bc_printA(char *str)
 
 int bc_box(int x1, int x2, int y1, int y2)
 {
-	if (x1 > x2 || y1 > y2)
+	if (x1 >= x2 || y1 >= y2)
 		return -1;
-	std::cout << "\E" << x1 << ";" << y1 << "H";
-	for (int i = 0; i <= x2 - x1; i++)
+	mt_gotoXY(x1, y1);
+	for (int i = 1; i <= x2 - x1; i++)
 	{
-		std::cout << "\E" << x1 + i << ";" << y1 << "H\u2500";
-		std::cout << "\E" << x1 + i << ";" << y2 << "H\u2500";
+		mt_gotoXY(x1 + i, y1);
+		std::cout << "\u2500";
+		mt_gotoXY(x1 + i, y2);
+		std::cout << "\u2500";
 	}
-	for (int i = 0; i <= y2 - y1; i++)
+	for (int i = 1; i <= y2 - y1; i++)
 	{
-		std::cout << "\E" << x1 << ";" << y1 + i << "H\u2502";
-		std::cout << "\E" << x2 << ";" << y1 + i << "H\u2502";
+		mt_gotoXY(x1, y1 + i);
+		std::cout << "\u2502";
+		mt_gotoXY(x2, y1 + i);
+		std::cout << "\u2502";
 	}
-	std::cout << "\E" << x1 << ";" << y1 << "H\b\u250C";
-	std::cout << "\E" << x2 << ";" << y1 << "H\b\u2510";
-	std::cout << "\E" << x1 << ";" << y2 << "H\b\u2514";
-	std::cout << "\E" << x2 << ";" << y2 << "H\b\u2518";
+
+	mt_gotoXY(x1, y1);
+	std::cout << "\u250C";
+	mt_gotoXY(x1, y2);
+	std::cout << "\u2514";
+	mt_gotoXY(x2, y1);
+	std::cout << "\u2510";
+	mt_gotoXY(x2, y2);
+	std::cout << "\u2518";
 	return 0;
 }
 
@@ -36,11 +45,11 @@ int bc_printbigchar(int A[2], int x, int y, enum colors CT, enum colors CB)
 	{
 		for (int j = 0; j < 8; j++)
 		{
-			A[0] >> 1;
 			if (A[0] & 1 == 1)
 				std::cout << "\u2588";
 			else
 				std::cout << " ";
+			A[0] = A[0] >> 1;
 		}
 		mt_gotoXY(x, y + i + 1);
 	}
@@ -48,14 +57,16 @@ int bc_printbigchar(int A[2], int x, int y, enum colors CT, enum colors CB)
 	{
 		for (int j = 0; j < 8; j++)
 		{
-			A[1] >> 1;
 			if (A[1] & 1 == 1)
 				std::cout << "\u2588";
 			else
 				std::cout << " ";
+			A[1] = A[1] >> 1;
 		}
 		mt_gotoXY(x, y + i + 5);
 	}
+	mt_setfgcolor(Standart);
+	mt_setbgcolor(Standart);
 	return 0;
 }
 
@@ -85,26 +96,16 @@ int bc_getbigcharpos(int *big, int x, int y, int *value)
 
 int bc_bigcharwrite(int fd, int * big, int count)
 {
-	char *filename = "SavedFiles"; 
-	std::ofstream out(filename, std::ios::binary);
-	if (!out)
-	{
-		return -1;
-	}
-	out.write((char*)&big, sizeof(int) * 2 * int);
-	out.close;
+	write(fd, big, sizeof(count) * 2 * count);
+	close(fd);
 	return 0;
 }
 
 int bc_bigcharread(int fd, int * big, int need_count, int *count)
 {
-	char *filename = "SavedFiles"; 
-	std::ifstream in(filename, std::ios::binary);
-	if(!in)
-	{
+	(*count) = read(fd, big, sizeof(need_count) * 2 * need_count)/8;
+	if ((*count) == 0)
 		return -1;
-	}
-	in.read((char*)big, sizeof(int) * 2 * count);
-	in.close;
+	close(fd);
 	return 0;
 }

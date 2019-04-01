@@ -1,17 +1,6 @@
 #include "Header.h"
 
-struct ConverterStrForSwitch{ std::string Str; int index; };
-
-const int index = 2;
-
-ConverterStrForSwitch Database[index];
-
-void FillInputDatabase()
-{
-	for (int i = 0; i < index; i++)
-		Database[i].index = i;
-	Database[0].Str = "PrintInterface";
-}
+BigSymbol BSDB[18];
 
 void Convert10to2(int Origin, std::string *Result)
 {
@@ -194,6 +183,76 @@ void Convert16to2(std::string Origin, std::string *Result)
 	}
 }
 
+void InitBigSymbolDB(void)
+{
+	BSDB[0].Symbol = '0';
+	BSDB[0].Cells[0] = 1111630872;
+	BSDB[0].Cells[1] = 405029442;	
+	BSDB[1].Symbol = '1';
+	BSDB[1].Cells[0] = 269752336;
+	BSDB[1].Cells[1] = 2081427472;
+	BSDB[2].Symbol = '2';
+	BSDB[2].Cells[0] = 541213244;
+	BSDB[2].Cells[1] = 2114193424;
+	BSDB[3].Symbol = '3';
+	BSDB[3].Cells[0] = 809517628;
+	BSDB[3].Cells[1] = 1010974784;	
+	BSDB[4].Symbol = '4';
+	BSDB[4].Cells[0] = 606613536;
+	BSDB[4].Cells[1] = 1881177634;	
+	BSDB[5].Symbol = '5';
+	BSDB[5].Cells[0] = 1040319102;
+	BSDB[5].Cells[1] = 1044398144;	
+	BSDB[6].Symbol = '6';
+	BSDB[6].Cells[0] = 1040335420;
+	BSDB[6].Cells[1] = 1010975298;
+	BSDB[7].Symbol = '7';
+	BSDB[7].Cells[0] = 541081726;
+	BSDB[7].Cells[1] = 134744080;	
+	BSDB[8].Symbol = '8';
+	BSDB[8].Cells[0] = 1010975292;
+	BSDB[8].Cells[1] = 1010975298;	
+	BSDB[9].Symbol = '9';
+	BSDB[9].Cells[0] = 1111638588;
+	BSDB[9].Cells[1] = 1010974844;		
+	BSDB[10].Symbol = 'A';
+	BSDB[10].Cells[0] = 606348312;
+	BSDB[10].Cells[1] = 1111638654;
+	BSDB[11].Symbol = 'B';
+	BSDB[11].Cells[0] = 1044529726;
+	BSDB[11].Cells[1] = 1044529730;	
+	BSDB[12].Symbol = 'C';
+	BSDB[12].Cells[0] = 37896764;
+	BSDB[12].Cells[1] = 1010975234;	
+	BSDB[13].Symbol = 'D';
+	BSDB[13].Cells[0] = 1111638590;
+	BSDB[13].Cells[1] = 1044529730;	
+	BSDB[14].Symbol = 'E';
+	BSDB[14].Cells[0] = 2114060926;
+	BSDB[14].Cells[1] = 2114060802;	
+	BSDB[15].Symbol = 'F';
+	BSDB[15].Cells[0] = 2114060926;
+	BSDB[15].Cells[1] = 33686018;	
+	BSDB[16].Symbol = '+';
+	BSDB[16].Cells[0] = 2115508224;
+	BSDB[16].Cells[1] = 1579134;	
+	BSDB[17].Symbol = '-';
+	BSDB[17].Cells[0] = 2113929216;
+	BSDB[17].Cells[1] = 126;	
+}
+
+int IdentifyCells(char Symbol, int *Cells)
+{
+	int i = 0;
+	while (Symbol != BSDB[i].Symbol && i < 18)
+		i++;
+	if (i == 18)
+		return -1;
+	Cells[0] = BSDB[i].Cells[0];
+	Cells[1] = BSDB[i].Cells[1];
+	return 0;
+}
+
 bool CheckCommand(int value)
 {
 	std::string Res;
@@ -296,154 +355,114 @@ void Convert16to10(std::string Origin, int *Result)
 	Convert2to10(Origin, Result);
 }
 
-void PrintInterface(void)
+void PrintMem(void)
 {
-	std::string res = "";
-	int k = 4;
-	std::cout << "\u250C";
-	for (int i = 1; i < k * 4; i++)
-		std::cout << "\u2500";
-	std::cout << "Memory";
-	for (int i = 0; i < k * 4; i++)
-		std::cout << "\u2500";
-	std::cout << "\u2500\u2500\u2510";
-	std::cout << "\u250C\u2500\u2500\u2500 Accumulator\u2500\u2500\u2500\u2510";
-	std::cout << "\u250C InstructionCounter\u2510";
-	std::cout << std::endl << "\u2502";
-	for (int i = 0; i < 5; i++)
+	int val;
+	std::string valS;
+	for (int i = 0; i < 20; i++)
 	{
-		Convert10to16(Memory[i], &res);
-		std::cout << res << "\t";
-	}
-	std::cout << "\u2502\u2502                  \u2502\u2502                   \u2502" << std::endl << "\u2502";
-	for (int i = 5; i < 10; i++)
-	{
-		Convert10to16(Memory[i], &res);
-		std::cout << res << "\t";
-	}
-	std::cout << "\u2502\u2514";
-	for (int i = 0; i < 18; i++)
-		std::cout << "\u2500";
-	std::cout << "\u2518\u2514";
-	for (int i = 0; i < 19; i++)
-		std::cout << "\u2500";
-	std::cout << "\u2518" << std::endl << "\u2502";
-	for (int i = 10; i < 15; i++)
-	{
-		Convert10to16(Memory[i], &res);
-		std::cout << res << "\t";
-	}
-
-	std::cout << "\u2502";
-	std::cout << "\u250C\u2500\u2500\u2500 Operation\u2500\u2500\u2500\u2500\u2500\u2510";
-	std::cout << "\u250C\u2500\u2500\u2500\u2500\u2500\u2500 Flags\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510";
-	std::cout << std::endl << "\u2502";
-
-	for (int i = 15; i < 20; i++)
-	{
-		Convert10to16(Memory[i], &res);
-		std::cout << res << "\t";
-	}
-
-	std::cout << "\u2502\u2502                  \u2502\u2502                   \u2502" << std::endl << "\u2502";
-	for (int i = 20; i < 25; i++)
-	{
-		Convert10to16(Memory[i], &res);
-		std::cout << res << "\t";
-	}
-	std::cout << "\u2502\u2514";
-	for (int i = 0; i < 18; i++)
-		std::cout << "\u2500";
-	std::cout << "\u2518\u2514";
-	for (int i = 0; i < 19; i++)
-		std::cout << "\u2500";
-	std::cout << "\u2518" << std::endl << "\u2502";
-
-	for (int i = 25; i < 30; i++)
-	{
-		Convert10to16(Memory[i], &res);
-		std::cout << res << "\t";
-	}
-
-	std::cout << "\u2502\u250C Keys:\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500";
-	std::cout << "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510";
-	std::cout << std::endl << "\u2502";
-
-	for (int i = 30; i < 50; i++)
-	{
-		Convert10to16(Memory[i], &res);
-		std::cout << res << "\t";
-		if (k)
-			k--;
-		else
+		mt_gotoXY(2, i + 2);
+		for (int j = 0; j < 5; j++)
 		{
-			std::cout << "\u2502";
-			std::cout << "\u2502                                       \u2502 " << std::endl << "\u2502";
-			k = 4;
+			mt_gotoXY(j*8 + 2, i + 2);
+			sc_memoryGet(j + i*5, &val);
+			Convert10to16(val, &valS);
+			std::cout << valS;
 		}
 	}
-
-	for (int i = 50; i < 55; i++)
-	{
-		Convert10to16(Memory[i], &res);
-		std::cout << res << "\t";
-	}
-	std::cout << "\u2502\u2514";
-
-	for (int i = 0; i < 39; i++)
-		std::cout << "\u2500";
-	std::cout << "\u2518" << std::endl << "\u2502";
-
-	for (int i = 55; i < 60; i++)
-	{
-		Convert10to16(Memory[i], &res);
-		std::cout << res << "\t";
-	}
-
-	std::cout << "\u2502\u250C";
-	for (int i = 0; i < 39; i++)
-		std::cout << "\u2500";
-	std::cout << "\u2510";
-	std::cout << std::endl << "\u2502";
-
-	for (int i = 60; i < 100; i++)
-	{
-		Convert10to16(Memory[i], &res);
-		std::cout << res << "\t";
-		if (k)
-			k--;
-		else
-		{
-			std::cout << "\u2502\u2502";
-			for (int j = 0; j < 39; j++)
-				std::cout << " ";
-			std::cout << "\u2502" << std::endl << "\u2502";
-			k = 4;
-		}
-	}
-	std::cout << "\b\u2514";
-	for (int i = 0; i < 39; i++)
-		std::cout << "\u2500";
-	std::cout << "\u2518\u2514";
-	for (int i = 0; i < 39; i++)
-		std::cout << "\u2500";
-	std::cout << "\u2518";
 }
 
-void Input(std::string Input)
+char identifyFlag(int value)
 {
-	int Check;
-	bool l = false;
-	for (Check = 0; Check < index; Check++)
-		if (Input == Database[Check].Str)
-			break;
-	switch (Check)
+	switch (value)
 	{
-	case 0:
-		PrintInterface();
-		break;
-	default:
-		std::cout << "Unknown command" << std::endl;
-		break;
+		case 1:
+			return 'M';
+		case 2:
+			return 'C';
+		case 3:
+			return 'F';
+		default:
+			return -1;
 	}
+}
+
+void PrintBigSymbols(int address)
+{
+	int val;
+	std::string valS;
+	sc_memoryGet(address, &val);
+	char c;
+	int *A = new int[2];
+	Convert10to16(val, &valS);
+	if (val >= 0)
+		c = '+';
+	else
+		c = '-';
+	IdentifyCells(c, A);
+	bc_printbigchar(A, 44, 14, Green, Black);
+	for(int i = 1; i <= 4; i++)
+	{
+		c = valS[i + 1];
+		IdentifyCells(c, A);
+		bc_printbigchar(A, 44 + i * 8, 14, Green, Black);
+	}
+	mt_gotoXY(1, 23);
+	delete [] A;
+}
+
+void CheckFlags(void)
+{
+	int val;
+	char c;
+	for (int i = 1; i < 4; i++)
+	{
+		sc_regGet(i, &val);
+		c = identifyFlag(i);
+		mt_gotoXY(64 + 2*i, 5);
+		if (val)
+			mt_setfgcolor(Red);
+		else
+			mt_setfgcolor(Black);
+		std::cout << c;
+	}
+}
+
+void GetBigNumber(std::string origin, int *A)
+{
+	char c;
+	int *B = new int[2];
+	for(int i = 0; i < 4; i++)
+	{
+		c = origin[i];
+		IdentifyCells(c, B);
+		for(int j = 0; j < 2; j++)
+			A[i * 2 + j] = B[j];
+	}
+}
+
+void PrintInterface(void)
+{
+	bc_box(1, 42, 1, 22);
+	mt_gotoXY(18, 1);
+	std::cout << "Memory";
+	bc_box(43, 64, 1, 3);
+	mt_gotoXY(49, 1);
+	std::cout << "Accumulator";
+	bc_box(65, 84, 1, 3);
+	mt_gotoXY(66, 1);
+	std::cout << "InstrictionCounter";
+	bc_box(43, 64, 4, 6);
+	mt_gotoXY(50, 4);
+	std::cout << "Operation";
+	bc_box(65, 84, 4, 6);
+	mt_gotoXY(72, 4);
+	std::cout << "Flags";
+	bc_box(43, 84, 7, 12);
+	mt_gotoXY(44, 7);
+	std::cout << "Keys";
+	bc_box(43, 84, 13, 22);
+	PrintMem();
+	CheckFlags();
+	PrintBigSymbols(0);
 }
