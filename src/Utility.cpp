@@ -23,10 +23,10 @@ void Convert2to10(std::string Origin, int *Result)
 {
 	*Result = 0;
 	int Summand = 1;
-	for (int i = 0; i < Origin.length(); i++)
+	for (unsigned int i = 0; i < Origin.length(); i++)
 		if (Origin[i] == '1')
 		{
-			for (int j = 0; j < Origin.length() - 1 - i; j++)
+			for (unsigned int j = 0; j < Origin.length() - 1 - i; j++)
 				Summand *= 2;
 			*Result += Summand;
 			Summand = 1;
@@ -96,12 +96,12 @@ void Convert2to16(std::string Origin, std::string *Result)
 	(*Result) = "";
 	int NumInt;
 	std::string Num = "";
-	for (int i = Origin.length() - 1; i >= 0; i--)
+	for (unsigned int i = Origin.length(); i > 0; i--)
 	{
 		Num.resize(Num.length() + 1);
-		for (int j = Num.length() - 1; j > 0; j--)
+		for (unsigned int j = Num.length() - 1; j > 0; j--)
 			Num[j] = Num[j - 1];
-		Num[0] = Origin[i];
+		Num[0] = Origin[i - 1];
 		if (Num.length() == 4)
 		{
 			Convert2to10(Num, &NumInt);

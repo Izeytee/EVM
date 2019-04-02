@@ -3,6 +3,7 @@
 int bc_printA(char *str)
 {
 	std::cout << "\E[11m" << str << "\E[10m";
+	return 0;
 }
 
 int bc_box(int x1, int x2, int y1, int y2)
@@ -45,7 +46,7 @@ int bc_printbigchar(int A[2], int x, int y, enum colors CT, enum colors CB)
 	{
 		for (int j = 0; j < 8; j++)
 		{
-			if (A[0] & 1 == 1)
+			if (A[0] % 2 == 1)
 				std::cout << "\u2588";
 			else
 				std::cout << " ";
@@ -57,7 +58,7 @@ int bc_printbigchar(int A[2], int x, int y, enum colors CT, enum colors CB)
 	{
 		for (int j = 0; j < 8; j++)
 		{
-			if (A[1] & 1 == 1)
+			if (A[1] % 2 == 1)
 				std::cout << "\u2588";
 			else
 				std::cout << " ";
@@ -72,7 +73,7 @@ int bc_printbigchar(int A[2], int x, int y, enum colors CT, enum colors CB)
 
 int bc_setbigcharpos(int *big, int x, int y, int value)
 {
-	if (value != 0 && value != 1 || x < 1 || x > 8 || y < 1 || y > 8)
+	if ((value != 0) && (value != 1 || x < 1 || x > 8 || y < 1 || y > 8))
 		return -1;
 	if (value == 1)
 	{
@@ -84,6 +85,7 @@ int bc_setbigcharpos(int *big, int x, int y, int value)
 		big[y / 5] = big[y / 5] & (~(1 << ((y - 1) * 8 + x - 1)));
 		return 0;
 	}
+	return -1;
 }
 
 int bc_getbigcharpos(int *big, int x, int y, int *value)
@@ -94,7 +96,7 @@ int bc_getbigcharpos(int *big, int x, int y, int *value)
 	return 0;
 }
 
-int bc_bigcharwrite(int fd, int * big, int count)
+int bc_bigcharwrite(int fd, int *big, int count)
 {
 	write(fd, big, sizeof(count) * 2 * count);
 	close(fd);
@@ -103,7 +105,7 @@ int bc_bigcharwrite(int fd, int * big, int count)
 
 int bc_bigcharread(int fd, int * big, int need_count, int *count)
 {
-	(*count) = read(fd, big, sizeof(need_count) * 2 * need_count)/8;
+	(*count) = read(fd, big , sizeof(need_count) * 2 * need_count)/8;
 	if ((*count) == 0)
 		return -1;
 	close(fd);
