@@ -2,7 +2,7 @@
 
 int bc_printA(char *str)
 {
-	std::cout << "\E[11m" << str << "\E[10m";
+	std::cout << "\E(0" << str << "\E(B";
 	return 0;
 }
 

@@ -1,10 +1,11 @@
 #ifndef _MYCOMUTER_SIMPLE_H
-#define MYCOMUTER_SIMPLE_H
+#define _MYCOMUTER_SIMPLE_H
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <cmath>
+#include <cstdio>
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -16,11 +17,15 @@
 #define FlagIncorrectCommand 2
 #define FlagIncorrectFlag 3
 
+enum colors { Dark, Red, Green, Yellow, Blue, Black, Cyan, White, Standart = 9};
+enum keys { Up, Right, Down, Left, load, save, r, t, input, f5, f6, quite, WrongKey};
+struct KeyCode{std::string KeyCommand; enum keys key;};
+struct BigSymbol{char Symbol; int Cells[2];};
+
 extern int Memory[100];
 extern int sc_FlagRegister;
-struct BigSymbol{char Symbol; int Cells[2];};
-enum colors { Dark, Red, Green, Yellow, Blue, Black, Cyan, White, Standart = 9};
 extern BigSymbol BSDB[18];
+extern KeyCode KCDB[13];
 
 int sc_regInit(void);
 int sc_regSet(int sc_register, int value);
@@ -48,6 +53,10 @@ char identifyFlag(int value);
 void PrintMem(void);
 void InitBigSymbolDB(void);
 void GetBigNumber(std::string origin, int *A);
+void InitKeyDB(void);
+int IdentifyKey(std::string KeyCommand, enum keys *key);
+int SimpleCommand(enum keys key);
+void ChangeMemValue(void);
 
 int mt_clrscr(void);
 int mt_gotoXY(int X, int Y);
@@ -55,7 +64,7 @@ int mt_getscreensize(int *rows, int *cols);
 int mt_setfgcolor(enum colors C);
 int mt_setbgcolor(enum colors C);
 
-int bc_printA(char *str);
+int bc_printA(std::string str);
 int bc_box(int x1, int x2, int y1, int y2);
 int bc_printbigchar(int A[2], int x, int y, enum colors CT, enum colors CB);
 int bc_setbigcharpos(int *big, int x, int y, int value);
@@ -63,4 +72,9 @@ int bc_getbigcharpos(int *big, int x, int y, int *value);
 int bc_bigcharwrite(int fd, int * big, int count);
 int bc_bigcharread(int fd, int * big, int need_count, int *count);
 
-#endif // !_MYCOMUTER_SIMPLE_H
+int rk_mytermregime(int regime, int vtime, int vmin, int echo, int siging);
+int rk_mytermsave();
+int rk_mytermrestore();
+int rk_readkey(enum keys*);
+
+#endif

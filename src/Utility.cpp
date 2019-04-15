@@ -1,6 +1,9 @@
 #include "Header.h"
 
 BigSymbol BSDB[18];
+KeyCode KCDB[13];
+
+int CurrentMemoryAddress = 0;
 
 void Convert10to2(int Origin, std::string *Result)
 {
@@ -241,6 +244,34 @@ void InitBigSymbolDB(void)
 	BSDB[17].Cells[1] = 126;	
 }
 
+void InitKeyDB(void)
+{
+	KCDB[0].KeyCommand = "\E[A";
+	KCDB[0].key = Up;
+	KCDB[1].KeyCommand = "\E[C";
+	KCDB[1].key = Right;
+	KCDB[2].KeyCommand = "\E[B";
+	KCDB[2].key = Down;
+	KCDB[3].KeyCommand = "\E[D";
+	KCDB[3].key = Left;
+	KCDB[4].KeyCommand = "l";
+	KCDB[4].key = load;
+	KCDB[5].KeyCommand = "s";
+	KCDB[5].key = save;
+	KCDB[6].KeyCommand = "r";
+	KCDB[6].key = r;
+	KCDB[7].KeyCommand = "t";
+	KCDB[7].key = t;
+	KCDB[8].KeyCommand = "i";
+	KCDB[8].key = input;
+	KCDB[9].KeyCommand = "\E[15~";
+	KCDB[9].key = f5;
+	KCDB[10].KeyCommand = "\E[17~";
+	KCDB[10].key = f6;
+	KCDB[11].KeyCommand = "q";
+	KCDB[11].key = quite;
+}
+
 int IdentifyCells(char Symbol, int *Cells)
 {
 	int i = 0;
@@ -251,6 +282,35 @@ int IdentifyCells(char Symbol, int *Cells)
 	Cells[0] = BSDB[i].Cells[0];
 	Cells[1] = BSDB[i].Cells[1];
 	return 0;
+}
+
+int IdentifyKey(std::string KeyCommand, enum keys *key)
+{
+	int i = 0;
+	while (KeyCommand != KCDB[i].KeyCommand && i < 12)
+		i++;
+	if (i == 12)
+	{
+		(*key) = WrongKey;
+		return -1;
+	}
+	(*key) = KCDB[i].key;
+	return 0;
+}
+
+void UpdateMemoryLocation(enum colors FC, enum colors BC)
+{
+	int val;
+	std::string valS;
+	mt_setfgcolor(FC);
+	mt_setbgcolor(BC);
+	mt_gotoXY((CurrentMemoryAddress % 5) * 8  + 2, CurrentMemoryAddress / 5 + 2);
+	sc_memoryGet(CurrentMemoryAddress, &val);
+	Convert10to16(val, &valS);
+	std::cout << valS;
+	mt_setfgcolor(Standart);
+	mt_setbgcolor(Standart);
+	mt_gotoXY(1, 23);
 }
 
 bool CheckCommand(int value)
@@ -441,6 +501,16 @@ void GetBigNumber(std::string origin, int *A)
 	}
 }
 
+void ChangeMemValue(void)
+{
+	int val;
+	std::cin >> val;
+	sc_memorySet(CurrentMemoryAddress, val);
+	PrintBigSymbols(CurrentMemoryAddress);
+	std::cout << "                                 ";
+	UpdateMemoryLocation(Green, White);
+}
+
 void PrintInterface(void)
 {
 	bc_box(1, 42, 1, 22);
@@ -463,6 +533,57 @@ void PrintInterface(void)
 	std::cout << "Keys";
 	bc_box(43, 84, 13, 22);
 	PrintMem();
+	UpdateMemoryLocation(Green, White);
 	CheckFlags();
-	PrintBigSymbols(0);
+	PrintBigSymbols(CurrentMemoryAddress);
+}
+
+int SimpleCommand(enum keys key)
+{
+	switch (key)
+	{
+		case 0:
+			if (CurrentMemoryAddress - 5 >= 0)
+			{
+				UpdateMemoryLocation(Standart, Standart);
+				CurrentMemoryAddress -= 5;
+				UpdateMemoryLocation(Green, White);
+				PrintBigSymbols(CurrentMemoryAddress);
+			}
+			return 0;
+		case 1:
+			if ((CurrentMemoryAddress % 5) != 4)
+			{
+				UpdateMemoryLocation(Standart, Standart);
+				CurrentMemoryAddress++;
+				UpdateMemoryLocation(Green, White);
+				PrintBigSymbols(CurrentMemoryAddress);
+			}
+			return 0;
+		case 2:
+			if (CurrentMemoryAddress + 5 <= 99)
+			{
+				UpdateMemoryLocation(Standart, Standart);
+				CurrentMemoryAddress += 5;
+				UpdateMemoryLocation(Green, White);
+				PrintBigSymbols(CurrentMemoryAddress);
+			}
+			return 0;
+		case 3:
+			if ((CurrentMemoryAddress % 5) != 0)
+			{
+				UpdateMemoryLocation(Standart, Standart);
+				CurrentMemoryAddress--;
+				UpdateMemoryLocation(Green, White);
+				PrintBigSymbols(CurrentMemoryAddress);
+			}
+			return 0;
+		case 8:
+			ChangeMemValue();
+			return 0;
+		case 11:
+			return 0;
+		default:
+			return -1;
+	}
 }
