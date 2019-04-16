@@ -11,9 +11,8 @@ int main()
 	sc_regInit();
 	sc_memoryInit();
 	InitBigSymbolDB();
-	sc_memorySet(12, 1111);
-	PrintInterface();
 	InitKeyDB();
+	PrintInterface();
 	while(key != quite)
 	{
 		rk_readkey(&key);

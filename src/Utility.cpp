@@ -2,6 +2,7 @@
 
 BigSymbol BSDB[18];
 KeyCode KCDB[13];
+char Memoryfilename[] = "Mem";
 
 int CurrentMemoryAddress = 0;
 
@@ -492,7 +493,7 @@ void GetBigNumber(std::string origin, int *A)
 {
 	char c;
 	int *B = new int[2];
-	for(int i = 0; i < 4; i++)
+	for(int i = 0; i < 5; i++)
 	{
 		c = origin[i];
 		IdentifyCells(c, B);
@@ -577,6 +578,15 @@ int SimpleCommand(enum keys key)
 				UpdateMemoryLocation(Green, White);
 				PrintBigSymbols(CurrentMemoryAddress);
 			}
+			return 0;
+		case 4:
+			sc_memoryLoad(Memoryfilename);
+			PrintMem();
+			UpdateMemoryLocation(Green, White);
+			PrintBigSymbols(CurrentMemoryAddress);
+			return 0;
+		case 5:
+			sc_memorySave(Memoryfilename);
 			return 0;
 		case 8:
 			ChangeMemValue();
