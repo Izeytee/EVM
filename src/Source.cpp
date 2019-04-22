@@ -112,9 +112,11 @@ int sc_memoryGet(int address, int *value)
 
 int sc_memorySave(char *filename)
 {
-	int fd = open(filename ,O_WRONLY);
+	int fd = creat(filename, S_IRWXU);
 	if (fd == -1)
+	{
 		return -1;
+	}
 	write(fd, (char*)Memory, sizeof(Memory));
 	close(fd);
 	return 0;
@@ -122,11 +124,14 @@ int sc_memorySave(char *filename)
 
 int sc_memoryLoad(char *filename)
 {
-	std::ifstream in(filename, std::ios::binary);
-	if (!in)
+	int fd = open(filename, O_RDONLY);
+	if (fd == -1)
+	{
+		std::cout << "LLLL";
 		return -1;
-	in.read((char*)Memory, sizeof(Memory));
-	in.close();
+	}
+	read(fd, (char*)Memory, sizeof(Memory) );
+	close(fd);
 	return 0;
 }
 
