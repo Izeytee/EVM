@@ -14,26 +14,26 @@ int bc_box(int x1, int x2, int y1, int y2)
 	for (int i = 1; i <= x2 - x1; i++)
 	{
 		mt_gotoXY(x1 + i, y1);
-		std::cout << "\u2500";
+		bc_printA((char*)"q");
 		mt_gotoXY(x1 + i, y2);
-		std::cout << "\u2500";
+		bc_printA((char*)"q");
 	}
 	for (int i = 1; i <= y2 - y1; i++)
 	{
 		mt_gotoXY(x1, y1 + i);
-		std::cout << "\u2502";
+		bc_printA((char*)"x");
 		mt_gotoXY(x2, y1 + i);
-		std::cout << "\u2502";
+		bc_printA((char*)"x");
 	}
 
 	mt_gotoXY(x1, y1);
-	std::cout << "\u250C";
+	bc_printA((char*)"l");
 	mt_gotoXY(x1, y2);
-	std::cout << "\u2514";
+	bc_printA((char*)"m");
 	mt_gotoXY(x2, y1);
-	std::cout << "\u2510";
+	bc_printA((char*)"k");
 	mt_gotoXY(x2, y2);
-	std::cout << "\u2518";
+	bc_printA((char*)"j");
 	return 0;
 }
 
@@ -46,11 +46,8 @@ int bc_printbigchar(int A[2], int x, int y, enum colors CT, enum colors CB)
 	{
 		for (int j = 0; j < 8; j++)
 		{
-			if (A[0] % 2 == 1)
-				std::cout << "\u2588";
-			else
-				std::cout << " ";
-			A[0] = A[0] >> 1;
+			A[0] % 2 == 1 ? bc_printA((char*)"a") : bc_printA((char*)" ");
+			A[0] >>= 1;
 		}
 		mt_gotoXY(x, y + i + 1);
 	}
@@ -58,11 +55,8 @@ int bc_printbigchar(int A[2], int x, int y, enum colors CT, enum colors CB)
 	{
 		for (int j = 0; j < 8; j++)
 		{
-			if (A[1] % 2 == 1)
-				std::cout << "\u2588";
-			else
-				std::cout << " ";
-			A[1] = A[1] >> 1;
+			A[1] % 2 == 1 ? bc_printA((char*)"a") : bc_printA((char*)" ");
+			A[1] >>= 1;
 		}
 		mt_gotoXY(x, y + i + 5);
 	}
@@ -77,12 +71,12 @@ int bc_setbigcharpos(int *big, int x, int y, int value)
 		return -1;
 	if (value == 1)
 	{
-		big[y / 5] = big[y / 5] | (1 << ((y - 1) * 8 + x - 1));
+		big[y / 5] |= (1 << ((y - 1) * 8 + x - 1));
 		return 0;
 	}
 	if (value == 0)
 	{
-		big[y / 5] = big[y / 5] & (~(1 << ((y - 1) * 8 + x - 1)));
+		big[y / 5] &= ~(1 << ((y - 1) * 8 + x - 1));
 		return 0;
 	}
 	return -1;

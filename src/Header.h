@@ -12,20 +12,24 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <cstring>
+#include <signal.h>
+#include <sys/time.h>
 
 #define MemoryOverFlow 1
 #define FlagIncorrectCommand 2
 #define FlagIncorrectFlag 3
+#define FlagIgnoreClockPulse 4
 
 enum colors { Dark, Red, Green, Yellow, Blue, Black, Cyan, White, Standart = 9};
-enum keys { Up, Right, Down, Left, load, save, r, t, input, f5, f6, quite, WrongKey};
+enum keys { Up, Right, Down, Left, Load, Save, Reset, Run, Step, F5, F6, Quit, WrongKey};
 struct KeyCode{std::string KeyCommand; enum keys key;};
 struct BigSymbol{char Symbol; int Cells[2];};
 
 extern int Memory[100];
 extern int sc_FlagRegister;
 extern BigSymbol BSDB[18];
-extern KeyCode KCDB[13];
+extern KeyCode KCDB[12];
 
 int sc_regInit(void);
 int sc_regSet(int sc_register, int value);
@@ -57,6 +61,11 @@ void InitKeyDB(void);
 int IdentifyKey(std::string KeyCommand, enum keys *key);
 int SimpleCommand(enum keys key);
 void ChangeMemValue(void);
+void ChangeMemAddress(void);
+void PrintInterface(void);
+void PrintInstructionCounter(void);
+int RunProgramme(void);
+void PrintAccumulator(void);
 
 int mt_clrscr(void);
 int mt_gotoXY(int X, int Y);
@@ -64,7 +73,7 @@ int mt_getscreensize(int *rows, int *cols);
 int mt_setfgcolor(enum colors C);
 int mt_setbgcolor(enum colors C);
 
-int bc_printA(std::string str);
+int bc_printA(char *str);
 int bc_box(int x1, int x2, int y1, int y2);
 int bc_printbigchar(int A[2], int x, int y, enum colors CT, enum colors CB);
 int bc_setbigcharpos(int *big, int x, int y, int value);

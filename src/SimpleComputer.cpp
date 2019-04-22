@@ -13,7 +13,7 @@ int main()
 	InitBigSymbolDB();
 	InitKeyDB();
 	PrintInterface();
-	while(key != quite)
+	while(key != Quit)
 	{
 		rk_readkey(&key);
 		SimpleCommand(key);

@@ -6,12 +6,14 @@ int sc_regSet(int sc_register, int value)
 	{
 		if (value == 1)
 		{
-			sc_FlagRegister = sc_FlagRegister | (1 << (sc_register - 1));
+			sc_FlagRegister |= (1 << (sc_register - 1));
+			CheckFlags();
 			return 0;
 		}
 		if (value == 0)
 		{
-			sc_FlagRegister = sc_FlagRegister & (~(1 << (sc_register - 1)));
+			sc_FlagRegister &= (~(1 << (sc_register - 1)));
+			CheckFlags();
 			return 0;
 		}
 		return -1;
@@ -19,6 +21,7 @@ int sc_regSet(int sc_register, int value)
 	else
 	{
 		sc_regSet(FlagIncorrectFlag, 1);
+		CheckFlags();
 		return -1;
 	}
 }
@@ -31,7 +34,7 @@ int sc_regGet(int sc_register, int *value)
 		return 0;
 	}
 	else
-		return -1;
+		return -1;	
 }
 
 int sc_commandEncode(int command, int operand, int *value)
@@ -40,6 +43,7 @@ int sc_commandEncode(int command, int operand, int *value)
 	if (command < 0 || command > 255)
 	{
 		sc_regSet(FlagIncorrectCommand, 1);
+		CheckFlags();
 		return -1;
 	}
 	if (operand < 0 || operand > 255)
@@ -59,6 +63,7 @@ int sc_commandDecode(int value, int * command, int * operand)
 	if (!CheckCommand(value))
 	{
 		sc_regSet(FlagIncorrectCommand, 1);
+		CheckFlags();
 		return -1;
 	}
 	Convert10to2(value, &Input);
@@ -79,7 +84,7 @@ int sc_memoryInit(void)
 
 int sc_memorySet(int address, int value)
 {
-	if (address < 100 && address >= 0)
+	if (address < 100 && address >= 0 && value >= 0 && value <= 65535)
 	{
 		Memory[address] = value;
 		return 0;
@@ -87,7 +92,6 @@ int sc_memorySet(int address, int value)
 	else
 	{
 		sc_regSet(MemoryOverFlow, 1);
-		std::cout << "Error. Memory over flow" << std::endl;
 		return -1;
 	}
 }
@@ -101,21 +105,18 @@ int sc_memoryGet(int address, int *value)
 	}
 	else
 	{
-		std::cout << "Error. Memory overflow" << std::endl;
+		sc_regSet(MemoryOverFlow, 1);
 		return -1;
 	}
 }
 
 int sc_memorySave(char *filename)
 {
-	std::ofstream out(filename, std::ios::binary);
-	if (!out)
-	{
-		std::cout << "Error. Wrong path" << std::endl;
+	int fd = open(filename ,O_WRONLY);
+	if (fd == -1)
 		return -1;
-	}
-	out.write((char*)&Memory, sizeof(Memory));
-	out.close();
+	write(fd, (char*)Memory, sizeof(Memory));
+	close(fd);
 	return 0;
 }
 
@@ -123,10 +124,7 @@ int sc_memoryLoad(char *filename)
 {
 	std::ifstream in(filename, std::ios::binary);
 	if (!in)
-	{
-		std::cout << "Error. Wrong path" << std::endl;
 		return -1;
-	}
 	in.read((char*)Memory, sizeof(Memory));
 	in.close();
 	return 0;

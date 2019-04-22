@@ -63,7 +63,6 @@ int rk_readkey(enum keys *key)
 {
 	struct termios term;
 	char *KeyCode = new char[8];
-	
 	if (tcgetattr(0, &term) == -1)
 	{
 		delete []KeyCode;

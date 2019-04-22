@@ -1,10 +1,11 @@
 #include "Header.h"
 
 BigSymbol BSDB[18];
-KeyCode KCDB[13];
-char Memoryfilename[] = "Mem";
+KeyCode KCDB[12];
+char Memoryfilename[21];
+int BigSymbol[2];
 
-int CurrentMemoryAddress = 0;
+int CurrentMemoryAddress;
 
 void Convert10to2(int Origin, std::string *Result)
 {
@@ -30,8 +31,8 @@ void Convert2to10(std::string Origin, int *Result)
 	for (unsigned int i = 0; i < Origin.length(); i++)
 		if (Origin[i] == '1')
 		{
-			for (unsigned int j = 0; j < Origin.length() - 1 - i; j++)
-				Summand *= 2;
+			for (unsigned int j = 0; j < Origin.length() - 1 - i; j++, Summand *= 2)
+				;
 			*Result += Summand;
 			Summand = 1;
 		}
@@ -256,21 +257,21 @@ void InitKeyDB(void)
 	KCDB[3].KeyCommand = "\E[D";
 	KCDB[3].key = Left;
 	KCDB[4].KeyCommand = "l";
-	KCDB[4].key = load;
+	KCDB[4].key = Load;
 	KCDB[5].KeyCommand = "s";
-	KCDB[5].key = save;
+	KCDB[5].key = Save;
 	KCDB[6].KeyCommand = "r";
-	KCDB[6].key = r;
+	KCDB[6].key = Run;
 	KCDB[7].KeyCommand = "t";
-	KCDB[7].key = t;
-	KCDB[8].KeyCommand = "i";
-	KCDB[8].key = input;
-	KCDB[9].KeyCommand = "\E[15~";
-	KCDB[9].key = f5;
-	KCDB[10].KeyCommand = "\E[17~";
-	KCDB[10].key = f6;
-	KCDB[11].KeyCommand = "q";
-	KCDB[11].key = quite;
+	KCDB[7].key = Step;
+	KCDB[8].KeyCommand = "\E[15~";
+	KCDB[8].key = F5;
+	KCDB[9].KeyCommand = "\E[17~";
+	KCDB[9].key = F6;
+	KCDB[10].KeyCommand = "q";
+	KCDB[10].key = Quit;
+	KCDB[11].KeyCommand = "i";
+	KCDB[11].key = Reset;
 }
 
 int IdentifyCells(char Symbol, int *Cells)
@@ -287,9 +288,9 @@ int IdentifyCells(char Symbol, int *Cells)
 
 int IdentifyKey(std::string KeyCommand, enum keys *key)
 {
-	int i = 0;
-	while (KeyCommand != KCDB[i].KeyCommand && i < 12)
-		i++;
+	int i;
+	for (i = 0; KeyCommand != KCDB[i].KeyCommand && i < 12; i++)
+		;
 	if (i == 12)
 	{
 		(*key) = WrongKey;
@@ -311,6 +312,8 @@ void UpdateMemoryLocation(enum colors FC, enum colors BC)
 	std::cout << valS;
 	mt_setfgcolor(Standart);
 	mt_setbgcolor(Standart);
+	PrintInstructionCounter();
+	PrintAccumulator();
 	mt_gotoXY(1, 23);
 }
 
@@ -443,6 +446,8 @@ char identifyFlag(int value)
 			return 'C';
 		case 3:
 			return 'F';
+		case 4:
+			return 'I';
 		default:
 			return -1;
 	}
@@ -454,29 +459,27 @@ void PrintBigSymbols(int address)
 	std::string valS;
 	sc_memoryGet(address, &val);
 	char c;
-	int *A = new int[2];
 	Convert10to16(val, &valS);
 	if (val >= 0)
 		c = '+';
 	else
 		c = '-';
-	IdentifyCells(c, A);
-	bc_printbigchar(A, 44, 14, Green, Black);
+	IdentifyCells(c, BigSymbol);
+	bc_printbigchar(BigSymbol, 44, 14, Yellow, Black);
 	for(int i = 1; i <= 4; i++)
 	{
 		c = valS[i + 1];
-		IdentifyCells(c, A);
-		bc_printbigchar(A, 44 + i * 8, 14, Green, Black);
+		IdentifyCells(c, BigSymbol);
+		bc_printbigchar(BigSymbol, 44 + i * 8, 14, Yellow, Black);
 	}
 	mt_gotoXY(1, 23);
-	delete [] A;
 }
 
 void CheckFlags(void)
 {
 	int val;
 	char c;
-	for (int i = 1; i < 4; i++)
+	for (int i = 1; i < 5; i++)
 	{
 		sc_regGet(i, &val);
 		c = identifyFlag(i);
@@ -487,6 +490,9 @@ void CheckFlags(void)
 			mt_setfgcolor(Black);
 		std::cout << c;
 	}
+	mt_setfgcolor(Standart);
+	mt_setbgcolor(Standart);
+	mt_gotoXY(1, 23);
 }
 
 void GetBigNumber(std::string origin, int *A)
@@ -504,12 +510,45 @@ void GetBigNumber(std::string origin, int *A)
 
 void ChangeMemValue(void)
 {
-	int val;
-	std::cin >> val;
-	sc_memorySet(CurrentMemoryAddress, val);
+	int Value;
+	std::cin >> Value;
+	sc_memorySet(CurrentMemoryAddress, Value);
 	PrintBigSymbols(CurrentMemoryAddress);
 	std::cout << "                                 ";
 	UpdateMemoryLocation(Green, White);
+}
+
+void ChangeMemAddress(void)
+{
+	int Address;
+	std::cin >> Address;
+	UpdateMemoryLocation(Standart, Standart);
+	Address >=0 && Address <= 99 ? CurrentMemoryAddress = Address : sc_regSet(MemoryOverFlow, 1);
+	PrintBigSymbols(CurrentMemoryAddress);
+	std::cout << "                                 ";
+	UpdateMemoryLocation(Green, White);
+}
+
+void PrintInstructionCounter(void)
+{
+	mt_gotoXY(66, 2);
+	std::string MemAddressX16;
+	Convert10to16(CurrentMemoryAddress, &MemAddressX16);
+	std::cout.width(12);
+	std::cout << MemAddressX16;
+	mt_gotoXY(1, 23);
+}
+
+void PrintAccumulator(void)
+{
+	mt_gotoXY(45, 2);
+	int MemValue;
+	sc_memoryGet(CurrentMemoryAddress, &MemValue);
+	std::string MemValueX16;
+	Convert10to16(MemValue, &MemValueX16);
+	std::cout.width(12);
+	std::cout << MemValueX16;
+	mt_gotoXY(1, 23);
 }
 
 void PrintInterface(void)
@@ -522,7 +561,7 @@ void PrintInterface(void)
 	std::cout << "Accumulator";
 	bc_box(65, 84, 1, 3);
 	mt_gotoXY(66, 1);
-	std::cout << "InstrictionCounter";
+	std::cout << "InstructionCounter";
 	bc_box(43, 64, 4, 6);
 	mt_gotoXY(50, 4);
 	std::cout << "Operation";
@@ -530,20 +569,88 @@ void PrintInterface(void)
 	mt_gotoXY(72, 4);
 	std::cout << "Flags";
 	bc_box(43, 84, 7, 12);
+	mt_gotoXY(44, 8);
+	std::cout << "q - Quit";
+	mt_gotoXY(44, 9);
+	std::cout << "s - Save";
+	mt_gotoXY(44, 10);
+	std::cout << "l - Load";
+	mt_gotoXY(44, 11);
+	std::cout << "r - Run";
+	mt_gotoXY(60, 8);
+	std::cout << "i  - Reset";
+	mt_gotoXY(60, 9);
+	std::cout << "F5 - Accumulator";
+	mt_gotoXY(60, 10);
+	std::cout << "F6 - InsrutctionCounter";
 	mt_gotoXY(44, 7);
 	std::cout << "Keys";
 	bc_box(43, 84, 13, 22);
 	PrintMem();
+	CurrentMemoryAddress = 0;
 	UpdateMemoryLocation(Green, White);
 	CheckFlags();
 	PrintBigSymbols(CurrentMemoryAddress);
 }
 
+void signalhandler(int signo)
+{
+	UpdateMemoryLocation(Standart, Standart);
+	CurrentMemoryAddress += CurrentMemoryAddress == 99 ? -99 : 1;
+	UpdateMemoryLocation(Green, White);
+	PrintBigSymbols(CurrentMemoryAddress);
+}
+
+void sighandler(int signo)
+{
+	alarm(0);
+	mt_clrscr();
+	sc_regInit();
+	sc_memoryInit();
+	PrintInterface();
+}
+
+void Signal(void)
+{
+	sc_regSet(FlagIgnoreClockPulse, 0);
+	
+	signal (SIGUSR1, sighandler);
+
+	raise (SIGUSR1);
+}
+
+void Timer(void)
+{
+	sc_regSet(FlagIgnoreClockPulse, 1);
+	
+	struct itimerval nval, oval;
+
+	signal (SIGALRM, signalhandler);
+
+	nval.it_interval.tv_sec = 1;
+ 	nval.it_interval.tv_usec = 1;
+ 	nval.it_value.tv_sec = 1;
+ 	nval.it_value.tv_usec = 0;
+
+	setitimer(ITIMER_REAL, &nval, &oval);
+}
+
+int RunProgramme(void)
+{
+	int FlagValue;
+	sc_regGet(FlagIgnoreClockPulse, &FlagValue);
+	FlagValue ? Signal() : Timer();
+	return 0;
+}
+
 int SimpleCommand(enum keys key)
 {
+	int FlagValue;
+	sc_regGet(FlagIgnoreClockPulse, &FlagValue);
+	if (FlagValue == 0 || key == Run)
 	switch (key)
 	{
-		case 0:
+		case Up:
 			if (CurrentMemoryAddress - 5 >= 0)
 			{
 				UpdateMemoryLocation(Standart, Standart);
@@ -552,7 +659,7 @@ int SimpleCommand(enum keys key)
 				PrintBigSymbols(CurrentMemoryAddress);
 			}
 			return 0;
-		case 1:
+		case Right:
 			if ((CurrentMemoryAddress % 5) != 4)
 			{
 				UpdateMemoryLocation(Standart, Standart);
@@ -561,7 +668,7 @@ int SimpleCommand(enum keys key)
 				PrintBigSymbols(CurrentMemoryAddress);
 			}
 			return 0;
-		case 2:
+		case Down:
 			if (CurrentMemoryAddress + 5 <= 99)
 			{
 				UpdateMemoryLocation(Standart, Standart);
@@ -570,7 +677,7 @@ int SimpleCommand(enum keys key)
 				PrintBigSymbols(CurrentMemoryAddress);
 			}
 			return 0;
-		case 3:
+		case Left:
 			if ((CurrentMemoryAddress % 5) != 0)
 			{
 				UpdateMemoryLocation(Standart, Standart);
@@ -579,21 +686,50 @@ int SimpleCommand(enum keys key)
 				PrintBigSymbols(CurrentMemoryAddress);
 			}
 			return 0;
-		case 4:
+		case Load:
+			std::cin >> Memoryfilename;
+			if (strlen(Memoryfilename) > 20)
+				return - 1;
 			sc_memoryLoad(Memoryfilename);
 			PrintMem();
 			UpdateMemoryLocation(Green, White);
 			PrintBigSymbols(CurrentMemoryAddress);
+			mt_gotoXY(1, 23);
+			std::cout << "                                 ";
+			mt_gotoXY(1, 23);
 			return 0;
-		case 5:
+		case Save:
+			std::cin >> Memoryfilename;
+			if (strlen(Memoryfilename) > 20)
+				return - 1;
 			sc_memorySave(Memoryfilename);
+			mt_gotoXY(1, 23);
+			std::cout << "                                 ";
+			mt_gotoXY(1, 23);
 			return 0;
-		case 8:
+		case Reset:
+			mt_clrscr();
+			sc_regInit();
+			sc_memoryInit();
+			InitBigSymbolDB();
+			InitKeyDB();
+			PrintInterface();
+			return 0;
+		case Step:
+			return 0;
+		case Run:
+			RunProgramme();
+			return 0;
+		case F5:
 			ChangeMemValue();
 			return 0;
-		case 11:
+		case F6:
+			ChangeMemAddress();
+			return 0;
+		case Quit: // Effect can be seen in main
 			return 0;
 		default:
 			return -1;
 	}
+	return -1;
 }
