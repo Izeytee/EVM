@@ -610,13 +610,21 @@ void sighandler(int signo)
 	PrintInterface();
 }
 
-void Signal(void)
+int Signal(void)
 {
+	int FlagValue;
+	sc_regGet(FlagIgnoreClockPulse, &FlagValue);
+
+	if (FlagValue == 0)
+		return -1;
+	
 	sc_regSet(FlagIgnoreClockPulse, 0);
 	
 	signal (SIGUSR1, sighandler);
 
 	raise (SIGUSR1);
+
+	return 0;
 }
 
 void Timer(void)
@@ -628,7 +636,7 @@ void Timer(void)
 	signal (SIGALRM, signalhandler);
 
 	nval.it_interval.tv_sec = 1;
- 	nval.it_interval.tv_usec = 1;
+ 	nval.it_interval.tv_usec = 0;
  	nval.it_value.tv_sec = 1;
  	nval.it_value.tv_usec = 0;
 
@@ -639,7 +647,11 @@ int RunProgramme(void)
 {
 	int FlagValue;
 	sc_regGet(FlagIgnoreClockPulse, &FlagValue);
-	FlagValue ? Signal() : Timer();
+
+	if (FlagValue == 1)
+		return -1;
+	
+	Timer();
 	return 0;
 }
 
@@ -647,7 +659,8 @@ int SimpleCommand(enum keys key)
 {
 	int FlagValue;
 	sc_regGet(FlagIgnoreClockPulse, &FlagValue);
-	if (FlagValue == 0 || key == Run)
+	if (FlagValue == true && key != Reset)
+		return -1;
 	switch (key)
 	{
 		case Up:
@@ -708,12 +721,7 @@ int SimpleCommand(enum keys key)
 			mt_gotoXY(1, 23);
 			return 0;
 		case Reset:
-			mt_clrscr();
-			sc_regInit();
-			sc_memoryInit();
-			InitBigSymbolDB();
-			InitKeyDB();
-			PrintInterface();
+			Signal();
 			return 0;
 		case Step:
 			return 0;
