@@ -1,26 +1,32 @@
 CC = g++
 CFLAGS = -Wall
 
-bin/SimpleComputer: build/SimpleComputer.o build/Source.o build/Utility.o build/MyTerm.o build/myBigChars.o build/myReadKey.o bin
-	$(CC) $(CFLAGS) build/SimpleComputer.o build/Source.o build/Utility.o build/MyTerm.o build/myBigChars.o build/myReadKey.o -o bin/SimpleComputer 
+bin/SimpleComputer: build/main.o build/mySimpleComputer.o build/utility.o build/myTerm.o build/myBigChars.o build/myReadKey.o build/mySignal.o build/CPU.o bin
+	$(CC) $(CFLAGS) build/main.o build/mySimpleComputer.o build/utility.o build/myTerm.o build/myBigChars.o build/myReadKey.o build/mySignal.o build/CPU.o -o bin/SimpleComputer 
 
-build/SimpleComputer.o: src/SimpleComputer.cpp src/Header.h build
-	$(CC) $(CFLAGS) -c src/SimpleComputer.cpp -o build/SimpleComputer.o
+build/main.o: src/main.cpp src/Header.h build
+	$(CC) $(CFLAGS) -c src/main.cpp -o build/main.o
 
-build/Source.o: src/Source.cpp src/Header.h build
-	$(CC) $(CFLAGS) -c src/Source.cpp -o build/Source.o
+build/mySimpleComputer.o: src/mySimpleComputer.cpp src/Header.h build
+	$(CC) $(CFLAGS) -c  src/mySimpleComputer.cpp -o build/mySimpleComputer.o
 
-build/Utility.o: src/Utility.cpp src/Header.h build
-	$(CC) $(CFLAGS) -c src/Utility.cpp -o build/Utility.o
+build/utility.o: src/utility.cpp src/Header.h build
+	$(CC) $(CFLAGS) -c  src/utility.cpp -o build/utility.o
 
-build/MyTerm.o: src/MyTerm.cpp src/Header.h build
-	$(CC) $(CFLAGS) -c src/MyTerm.cpp -o build/MyTerm.o
+build/myTerm.o: src/myTerm.cpp src/Header.h build
+	$(CC) $(CFLAGS) -c src/myTerm.cpp -o build/myTerm.o
 
 build/myBigChars.o: src/myBigChars.cpp src/Header.h build
 	$(CC) $(CFLAGS) -c src/myBigChars.cpp -o build/myBigChars.o
 
 build/myReadKey.o: src/myReadKey.cpp src/Header.h build
 	$(CC) $(CFLAGS) -c src/myReadKey.cpp -o build/myReadKey.o
+
+build/mySignal.o: src/mySignal.cpp src/Header.h build
+	$(CC) $(CFLAGS) -c src/mySignal.cpp -o build/mySignal.o
+
+build/CPU.o: src/CPU.cpp src/Header.h build
+	$(CC) $(CFLAGS) -c src/CPU.cpp -o build/CPU.o
 
 build:
 	mkdir build
