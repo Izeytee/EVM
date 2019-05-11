@@ -463,6 +463,34 @@ void ChangeAccumValue(void)
 	PrintAccumulator();
 }
 
+int ReadAssemblerFile(int argc, char *argv[])
+{
+	int address, command, operand, value;
+	if (argc == 1)
+		return 0;
+	std::string FP = "SimpleAssembler/";
+	FP += *++argv;
+	char *FilePath = new char[FP.length() + 1];
+	for (size_t i = 0; i < FP.length(); i++)
+		FilePath[i] = FP[i];
+	FilePath[FP.length()] = '\0';
+	std::ifstream InputFile(FilePath, std::ios::in | std::ios::binary);
+	if (!InputFile)
+	{
+		std::cout << "Incorrect file name";
+		return -1;
+	}
+	while(InputFile.read((char*)&address, sizeof(address)))
+	{
+		InputFile.read((char*)&command, sizeof(command));		
+		InputFile.read((char*)&operand, sizeof(operand));
+		command != 1 ? sc_commandEncode(command, operand, &value) : value = operand;
+		sc_memorySet(address, value);
+	}
+	InputFile.close();
+	return 0;
+}
+
 void PrintOperation(void)
 {
 	mt_gotoXY(50, 5);

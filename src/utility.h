@@ -22,6 +22,7 @@ void PrintInstructionCounter(void);
 void PrintAccumulator(void);
 void PrintOperation(void);
 void UpdateMemoryLocation(enum colors FC, enum colors BC);
+int ReadAssemblerFile(int argc, char *argv[]);
 int IdentifyKey(std::string KeyCommand, enum keys *key);
 int SimpleCommand(enum keys key);
 int IdentifyCells(char Symbol, int *Cells);

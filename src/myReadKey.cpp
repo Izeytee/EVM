@@ -1,5 +1,7 @@
 #include "Header.h"
 
+char *KeyCode = new char[8];
+
 int rk_mytermregime(int regime, int vtime, int vmin, int echo, int sigint)
 {
 	struct termios term;
@@ -48,29 +50,17 @@ int rk_mytermrestore()
 int rk_readkey(enum keys *key)
 {
 	struct termios term;
-	char *KeyCode = new char[8];
+	for (int i = 0; i < 8; ++i)
+		KeyCode[i] = 0;
 	if (tcgetattr(0, &term) == -1)
-	{
-		delete []KeyCode;
 		return -1;
-	}
 	if (rk_mytermregime(0, 0, 1, 0, 0) == -1)
-	{
-		delete []KeyCode;
 		return -1;
-	}
 	if (read(0, KeyCode, 8) <= 0)
-	{
-		delete []KeyCode;
 		return -1;
-	}
 	if (rk_mytermregime(1, 1, 1, 1, 1) == -1)
-	{
-		delete []KeyCode;
 		return -1;
-	}
 	std::string StringKeyCode = KeyCode;
 	IdentifyKey(StringKeyCode, key);
-	delete []KeyCode;
 	return 0;
 }

@@ -21,8 +21,11 @@ int CU(void)
 			alarm(0);
 			rk_mytermregime(1, 1, 1, 1, 1);
 			std::cin >> InputValue;
-			if (sc_memorySet(CurrentMemoryAddress, InputValue) == -1)
+			if (InputValue < 0 || InputValue > 127)
 				return -1;
+			Memory[CurrentMemoryAddress] >>= 7;
+			Memory[CurrentMemoryAddress] <<= 7;
+			Memory[CurrentMemoryAddress] |= InputValue;
 			UpdateMemoryLocation(Green, White);
 			PrintBigSymbols(CurrentMemoryAddress);
 			rk_mytermregime(0, 0, 1, 0, 1);
