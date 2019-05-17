@@ -42,7 +42,6 @@ int CU(void)
 				sc_regSet(MemoryOverFlow, 1);
 				return -1;
 			}
-			value &= 0x7F;
 			Accumulator = value;
 			PrintAccumulator();
 			break;
