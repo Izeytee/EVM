@@ -8,7 +8,6 @@ int CU(void)
 	if (sc_commandDecode(value, &command, &operand) == -1)
 	{
 		sc_regSet(FlagIncorrectCommand, 1);
-		CheckFlags();
 		return -1;
 	}
 
@@ -21,28 +20,43 @@ int CU(void)
 			alarm(0);
 			rk_mytermregime(1, 1, 1, 1, 1);
 			std::cin >> InputValue;
-			if (InputValue < 0 || InputValue > 127)
-				return -1;
-			Memory[CurrentMemoryAddress] >>= 7;
-			Memory[CurrentMemoryAddress] <<= 7;
-			Memory[CurrentMemoryAddress] |= InputValue;
-			UpdateMemoryLocation(Green, White);
-			PrintBigSymbols(CurrentMemoryAddress);
 			rk_mytermregime(0, 0, 1, 0, 1);
+			if (sc_memorySet(operand, InputValue) == -1)
+			{
+				sc_regSet(MemoryOverFlow, 1);
+				return -1;
+			}
+			UpdateMemoryLocation(Standart, Standart, operand);
 			break;
 		case 0x11:
-			std::cout << operand;
+			if (sc_memoryGet(operand, &value) == -1)
+			{
+				sc_regSet(MemoryOverFlow, 1);
+				return -1;
+			}
+			std::cout << value;
 			break;
 		case 0x20:
-			Accumulator = operand;
+			if (sc_memoryGet(operand, &value) == -1)
+			{
+				sc_regSet(MemoryOverFlow, 1);
+				return -1;
+			}
+			value &= 0x7F;
+			Accumulator = value;
 			PrintAccumulator();
 			break;
 		case 0x21:
-			if (Accumulator < 0 || Accumulator > 127)
+			if (sc_memoryGet(operand, &value) == -1)
+			{
+				sc_regSet(MemoryOverFlow, 1);
 				return -1;
-			Memory[CurrentMemoryAddress] >>= 7;
-			Memory[CurrentMemoryAddress] <<= 7;
-			Memory[CurrentMemoryAddress] |= Accumulator;
+			}
+			if (sc_memorySet(Accumulator, value) == -1)
+			{
+				sc_regSet(MemoryOverFlow, 1);
+				return -1;
+			}
 			break;
 		case 0x40:
 			ChangeMemAddress(operand);
@@ -56,13 +70,17 @@ int CU(void)
 				ChangeMemAddress(operand);
 			break;
 		case 0x43:
-			alarm(0);
-			break;
+			return -1; //Programms end
 		case 0x69:
+			if (sc_memoryGet(operand, &value) == -1)
+			{
+				sc_regSet(MemoryOverFlow, 1);
+				return -1;
+			}
 			Accumulator %= 16;
-			tempAccum = (uint16_t) operand << Accumulator;
-			operand >>= 16 - Accumulator;
-			Accumulator = operand | tempAccum;
+			tempAccum = (uint16_t) value << Accumulator;
+			value >>= 16 - Accumulator;
+			Accumulator = value | tempAccum;
 			PrintAccumulator();
 			break;
 		default:
@@ -74,40 +92,44 @@ int CU(void)
 int ALU(int command, int operand)
 {
 	int value;
-	sc_memoryGet(CurrentMemoryAddress, &value);
+	if (sc_memoryGet(operand, &value) == -1)
+	{
+		sc_regSet(MemoryOverFlow, 1);
+		return -1;
+	}
 	switch(command)
 	{
 		case 0x30:
-			Accumulator += operand;
-			if (Accumulator > 65535 || Accumulator < -65535)
+			Accumulator += value;
+			if (Accumulator > 32767 || Accumulator < -32767)
 			{
 				sc_regSet(FlagAccumulatorOvervlow, 1);
 				return -1;
 			}
 			break;
 		case 0x31:
-			Accumulator -= operand;
-			if (Accumulator > 65535 || Accumulator < -65535)
+			Accumulator -= value;
+			if (Accumulator > 32767 || Accumulator < -32767)
 			{
 				sc_regSet(FlagAccumulatorOvervlow, 1);
 				return -1;
 			}
 			break;
 		case 0x33:
-			Accumulator *= operand;
-			if (Accumulator > 65535 || Accumulator < -65535)
+			Accumulator *= value;
+			if (Accumulator > 32767 || Accumulator < -32767)
 			{
 				sc_regSet(FlagAccumulatorOvervlow, 1);
 				return -1;
 			}
 			break;
 		case 0x32:
-			if (operand == 0)
+			if (value == 0)
 			{
 				sc_regSet(FlagZeroDivision, 1);
 				return -1;
 			}
-			Accumulator /= operand;
+			Accumulator /= value;
 			break;
 		default:
 			return -1;
