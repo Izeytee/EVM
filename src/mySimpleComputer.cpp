@@ -46,14 +46,14 @@ int sc_commandEncode(int command, int operand, int *value)
 int sc_commandDecode(int value, int * command, int * operand)
 {
 	std::string Input;
-	if (!CheckCommand(value))
-		return -1;
 	Convert10to2(value, &Input);
 	std::string Oper = "", Com = "";
 	Oper.replace(0, 7, Input, 8, 15);
 	Com.replace(0, 7, Input, 1, 7);
 	Convert2to10(Oper, operand);
 	Convert2to10(Com, command);
+	if (!CheckCommand(value))
+		return -1;
 	return 0;
 }
 
@@ -66,7 +66,7 @@ int sc_memoryInit(void)
 
 int sc_memorySet(int address, int value)
 {
-	if (address < 100 && address >= 0 && value >= 0 && value <= 65535)
+	if (address < 100 && address >= 0 && value >= 0 && value <= 32767)
 	{
 		Memory[address] = value;
 		return 0;
@@ -108,10 +108,7 @@ int sc_memoryLoad(char *filename)
 {
 	int fd = open(filename, O_RDONLY);
 	if (fd == -1)
-	{
-		std::cout << "LLLL";
 		return -1;
-	}
 	read(fd, (char*)Memory, sizeof(Memory) );
 	close(fd);
 	return 0;

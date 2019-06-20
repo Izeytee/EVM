@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 		{
 			if (Field[j] == '+')
 				continue;
-			Commands[2] *= 16;
+			Commands[2] *= 10;
 			Commands[2] += (Field[j] - '0');
 		}
 		OutputFile.write((char*)&Commands[2], sizeof(int));

@@ -1,8 +1,0 @@
-CC = g++
-CFLAGS = -Wall
-
-sat: AssemblerTranslator.o
-	$(CC) $(CFLAGS) AssemblerTranslator.o -o sat
-
-AssemblerTranslator.o: AssemblerTranslator.cpp
-	$(CC) $(CFLAGS) -c AssemblerTranslator.cpp -o AssemblerTranslator.o

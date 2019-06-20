@@ -1,0 +1,8 @@
+CC = g++
+CFLAGS = -Wall
+
+sbt: BasicTranslator.o
+	$(CC) $(CFLAGS) BasicTranslator.o -o sbt
+
+BasicTranslator.o: BasicTranslator.cpp
+	$(CC) $(CFLAGS) -c BasicTranslator.cpp -o BasicTranslator.o

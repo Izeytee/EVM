@@ -11,7 +11,7 @@ int CU(void)
 		return -1;
 	}
 
-	if (command >= 0x30 && command <= 0x34)
+	if (command >= 0x30 && command <= 0x33)
 		return ALU(command, operand) == 0 ? 0 : -1;
 
 	switch(command)
@@ -42,31 +42,28 @@ int CU(void)
 				sc_regSet(MemoryOverFlow, 1);
 				return -1;
 			}
+			value &= 0x7FFF;
 			Accumulator = value;
 			PrintAccumulator();
 			break;
 		case 0x21:
-			if (sc_memoryGet(operand, &value) == -1)
+			if (sc_memorySet(operand, Accumulator) == -1)
 			{
 				sc_regSet(MemoryOverFlow, 1);
 				return -1;
 			}
-			if (sc_memorySet(Accumulator, value) == -1)
-			{
-				sc_regSet(MemoryOverFlow, 1);
-				return -1;
-			}
+			UpdateMemoryLocation(Standart, Standart, operand);
 			break;
 		case 0x40:
-			ChangeMemAddress(operand);
+			ChangeMemAddress(operand - 1);
 			break;
 		case 0x41:
 			if (Accumulator < 0)
-				ChangeMemAddress(operand);
+				ChangeMemAddress(operand - 1);
 			break;
 		case 0x42:
 			if (Accumulator == 0)
-				ChangeMemAddress(operand);
+				ChangeMemAddress(operand - 1);
 			break;
 		case 0x43:
 			return -1; //Programms end

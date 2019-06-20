@@ -25,7 +25,7 @@ void signalhandler(int signo)
 	UpdateMemoryLocation(Green, White);
 	PrintOperation();
 	PrintBigSymbols(CurrentMemoryAddress);
-	alarm(1);
+	Timer();
 }
 
 void sighandler(int signo)
@@ -56,10 +56,10 @@ void Timer(void)
 
 	signal (SIGALRM, signalhandler);
 
-	nval.it_interval.tv_sec = 1;
- 	nval.it_interval.tv_usec = 0;
- 	nval.it_value.tv_sec = 1;
- 	nval.it_value.tv_usec = 0;
+	nval.it_interval.tv_sec = 0;
+ 	nval.it_interval.tv_usec = 100000;
+ 	nval.it_value.tv_sec = 0;
+ 	nval.it_value.tv_usec = 100000;
 
 	setitimer(ITIMER_REAL, &nval, &oval);
 }
